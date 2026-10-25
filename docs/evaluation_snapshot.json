@@ -1,6 +1,7 @@
 {
   "source": "Saved evaluation summaries already present in the working project",
   "generated_for_readme_update": false,
+  "step_1_step_2_input_note": "Saved historical run used the same question field for both steps. Current evaluator defaults to the brief's asr_text field, so this is not a fresh asr_text run.",
   "scoring_note": "String-based screening checks; review paraphrases, date and number equivalence, and language quality manually.",
   "step_1_questions": {
     "cases": 52,
