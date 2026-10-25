@@ -1,0 +1,15 @@
+.env
+.venv/
+venv/
+dataset/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+sample_outputs/*
+!sample_outputs/README.md
+reports/
+*.wav
+tests/.tmp/
+.vercel/
+/voiceops_bundle.zip
+/voiceops_2026_submission.zip

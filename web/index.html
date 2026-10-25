@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4ef">
+  <title>VoiceOps · ZentroMart support</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="VoiceOps home">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <span>voiceops<span class="brand-period">.</span></span>
+      </a>
+      <div class="topbar-right">
+        <span class="local-pill"><span class="status-dot"></span> Local workspace</span>
+        <button class="new-chat" id="newChat" type="button">＋ New conversation</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="eyebrow">ZENTROMART · CUSTOMER CARE</div>
+        <h1>Support that<br><span>listens.</span></h1>
+        <p class="intro">Ask about orders, delivery, returns or refunds. Answers use the capstone documents and verified support tools.</p>
+
+        <div class="capability-list" aria-label="Agent capabilities">
+          <div class="capability"><span class="cap-icon violet">01</span><span><strong>Grounded answers</strong><small>Policy documents with source IDs</small></span></div>
+          <div class="capability"><span class="cap-icon peach">02</span><span><strong>Order support</strong><small>Identity check before order details</small></span></div>
+          <div class="capability"><span class="cap-icon blue">03</span><span><strong>Voice conversations</strong><small>Gnani speech in and spoken replies</small></span></div>
+        </div>
+
+        <div class="system-card">
+          <div class="system-heading"><span class="system-icon">✳</span><span>Agent status</span></div>
+          <div class="system-row"><span>Knowledge base</span><span class="system-value" id="datasetStatus">Checking…</span></div>
+          <div class="system-row"><span>Voice services</span><span class="system-value" id="voiceStatus">Checking…</span></div>
+          <div class="system-row"><span>Language model</span><span class="system-value" id="modelName">Gemini</span></div>
+        </div>
+        <p class="privacy-note">Use only the fictional capstone records. Order details stay protected until verification succeeds.</p>
+      </aside>
+
+      <section class="chat-panel" aria-label="Support conversation">
+        <div class="chat-heading">
+          <div class="agent-avatar" aria-hidden="true"><span>z</span><i></i></div>
+          <div class="agent-title"><strong>ZentroMart assistant</strong><span><i class="live-dot"></i> Ready when you are</span></div>
+          <label class="step-picker"><span class="sr-only">Agent step</span>
+            <select id="stepSelect" aria-label="Choose capstone step">
+              <option value="1">Step 1 · Prompting</option>
+              <option value="2">Step 2 · Documents</option>
+              <option value="3" selected>Step 3 · Conversation</option>
+            </select>
+          </label>
+          <button class="more-button" id="helpButton" type="button" aria-label="Show usage help" title="How to use">?</button>
+        </div>
+        <div class="help-strip" id="helpStrip" hidden>
+          Type a message or choose <b>Record a question</b>. Allow microphone access when your browser asks. Voice is processed by Gnani; replies include the sources the agent retrieved.
+        </div>
+
+        <div class="conversation" id="conversation" aria-live="polite" aria-relevant="additions text">
+          <div class="welcome-card" id="welcomeCard">
+            <span class="welcome-kicker">YOUR ZENTROMART SUPPORT AGENT</span>
+            <h2>How can I help<br>you today?</h2>
+            <p>Try one of these, or ask in your own words.</p>
+            <div class="suggestions">
+              <button type="button" data-prompt="Where is my order?">Where is my order? <span>↗</span></button>
+              <button type="button" data-prompt="How long do I have to return an item?">How long do I have to return an item? <span>↗</span></button>
+              <button type="button" data-prompt="My refund has not arrived. What can you do?">My refund has not arrived. <span>↗</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="composer-wrap">
+          <div class="recording-status" id="recordingStatus" role="status" hidden><span class="recording-pulse"></span><span id="recordingLabel">Recording</span><button id="cancelRecording" type="button">Cancel</button></div>
+          <form class="composer" id="chatForm">
+            <label class="sr-only" for="messageInput">Your message</label>
+            <textarea id="messageInput" rows="1" maxlength="4000" placeholder="Ask about an order, return or refund…"></textarea>
+            <div class="composer-actions">
+              <label class="speak-toggle" title="Uses Gnani text-to-speech for typed replies">
+                <input type="checkbox" id="speakReplies">
+                <span class="toggle-track"><span></span></span>
+                <span>Read replies aloud</span>
+              </label>
+              <div class="action-buttons">
+                <button class="record-button" id="recordButton" type="button" aria-label="Record a question" title="Record a voice question"><span class="mic-icon" aria-hidden="true">●</span><span class="record-label">Record a question</span></button>
+                <button class="send-button" id="sendButton" type="submit" aria-label="Send message"><span>Send</span><b aria-hidden="true">↑</b></button>
+              </div>
+            </div>
+          </form>
+          <p class="composer-footnote">Enter to send · Shift + Enter for a new line <span>Powered by Gemini + Gnani</span></p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

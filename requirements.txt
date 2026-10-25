@@ -1,0 +1,5 @@
+python-dotenv>=1.0,<2
+gnani-vachana
+google-genai>=1.0.0,<2
+mutagen>=1.47,<2
+cryptography>=42,<51
