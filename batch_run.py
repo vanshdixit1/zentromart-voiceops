@@ -20,11 +20,41 @@ EXTENSIONS = {".wav", ".mp3", ".m4a", ".flac", ".ogg"}
 MAX_AUDIO_SECONDS = 60
 
 
+def _wav_data_chunk(path: Path) -> tuple[int, int] | None:
+    """Return the WAV data chunk's declared and physically available byte counts."""
+    file_size = path.stat().st_size
+    with path.open("rb") as handle:
+        header = handle.read(12)
+        if len(header) != 12 or header[:4] != b"RIFF" or header[8:12] != b"WAVE":
+            return None
+        offset = 12
+        while offset + 8 <= file_size:
+            handle.seek(offset)
+            chunk_header = handle.read(8)
+            if len(chunk_header) != 8:
+                break
+            chunk_name = chunk_header[:4]
+            declared_size = int.from_bytes(chunk_header[4:], "little")
+            data_offset = offset + 8
+            if chunk_name == b"data":
+                return declared_size, max(0, file_size - data_offset)
+            offset = data_offset + declared_size + (declared_size & 1)
+    return None
+
+
 def audio_duration_seconds(path: Path) -> float:
     try:
         if path.suffix.lower() == ".wav":
             with wave.open(str(path), "rb") as audio:
-                return audio.getnframes() / max(audio.getframerate(), 1)
+                rate = max(audio.getframerate(), 1)
+                frames = audio.getnframes()
+                chunk = _wav_data_chunk(path)
+                if chunk and chunk[0] == 0xFFFFFFFF:
+                    frame_bytes = audio.getnchannels() * audio.getsampwidth()
+                    if frame_bytes < 1:
+                        raise VoiceError(f"Cannot validate WAV frame size for {path.name}.")
+                    frames = chunk[1] // frame_bytes
+                return frames / rate
         from mutagen import File as MutagenFile
         audio = MutagenFile(path)
         duration = getattr(getattr(audio, "info", None), "length", None)

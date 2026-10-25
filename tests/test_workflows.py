@@ -44,6 +44,23 @@ class FakeVoice:
 
 
 class WorkflowTests(unittest.TestCase):
+    def test_audio_duration_supports_gnani_streaming_wav_headers(self):
+        import wave
+
+        with tempfile.TemporaryDirectory(dir=TEST_TMP) as temp:
+            audio_path = Path(temp) / "gnani.wav"
+            with wave.open(str(audio_path), "wb") as audio:
+                audio.setnchannels(1)
+                audio.setsampwidth(2)
+                audio.setframerate(16000)
+                audio.writeframes(b"\0\0" * 8000)
+            raw = bytearray(audio_path.read_bytes())
+            data_chunk = raw.index(b"data")
+            raw[4:8] = b"\xff\xff\xff\xff"
+            raw[data_chunk + 4:data_chunk + 8] = b"\xff\xff\xff\xff"
+            audio_path.write_bytes(raw)
+            self.assertEqual(batch_run.audio_duration_seconds(audio_path), 0.5)
+
     def test_gemini_responses_preserve_order_verification_tool_flow(self):
         from unittest.mock import Mock
         from google import genai
@@ -109,6 +126,43 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(first_saved["input"], first_question["asr_text"])
             self.assertIn("Step 1 (asr_text)", stdout.getvalue())
             self.assertIn("Step 2 (asr_text)", stdout.getvalue())
+
+    def test_evaluator_limit_caps_cases_per_step(self):
+        settings = types.SimpleNamespace(
+            gemini_api_key="offline-test", gemini_fallback_api_key="", gemini_model="offline-test",
+            embedding_api_key="", embedding_base_url="https://api.openai.com/v1",
+            embedding_model="text-embedding-3-small", gemini_timeout=1,
+            gemini_min_request_interval=0, embedding_timeout=1, dataset=DATASET,
+        )
+        with tempfile.TemporaryDirectory(dir=TEST_TMP) as temp:
+            output = Path(temp) / "evaluation.jsonl"
+            argv = ["evaluate.py", "--dataset", str(DATASET), "--steps", "1", "2", "3",
+                    "--limit", "3", "--output", str(output)]
+            with patch.object(sys, "argv", argv), \
+                 patch.object(evaluate, "load_settings", return_value=settings), \
+                 patch.object(evaluate, "GeminiChatModel", return_value=OfflineModel()), \
+                 patch.object(evaluate, "configured_knowledge",
+                              side_effect=lambda dataset, cfg: KnowledgeBase(dataset)), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(evaluate.main(), 0)
+
+            summary = json.loads(output.with_suffix(".summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["step_1_questions"]["cases"], 3)
+            self.assertEqual(summary["step_2_questions"]["cases"], 3)
+            self.assertEqual(summary["step_3_questions"]["cases"], 3)
+            rows = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines()]
+            question_rows = [row for row in rows if row["kind"] == "question"]
+            conversation_rows = [row for row in rows if row["kind"] == "conversation"]
+            all_conversations = read_csv(DATASET / "practice" / "conversations.csv")
+            first_conversation_ids = list(dict.fromkeys(
+                row["conversation_id"] for row in all_conversations))[:3]
+            self.assertEqual(len(question_rows), 9)
+            self.assertEqual({row["conversation_id"] for row in conversation_rows},
+                             set(first_conversation_ids))
+            self.assertEqual(len(conversation_rows), sum(
+                row["conversation_id"] in set(first_conversation_ids) for row in all_conversations))
+            self.assertEqual({row["input"] for row in rows if row["step"] == 1},
+                             {row["asr_text"] for row in read_csv(DATASET / "practice" / "questions.csv")[:3]})
 
     def test_evaluator_resume_skips_saved_cases_without_duplicate_rows(self):
         settings = types.SimpleNamespace(

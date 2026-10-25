@@ -84,7 +84,7 @@ class SupportAgent:
                 for c in chunks
             ]
             context = "\n\n".join(f"[{c.section_id}; {c.doc_type}; status={c.status}; effective_from={c.effective_from}]\n{c.text}" for c in chunks)
-            system += "\n\nUse only the retrieved documents/catalog rows below as factual evidence. Apply the precedence stated above. Do not treat a superseded section as generally current; use it only if a current successor explicitly preserves it for this case. If evidence is missing, say you do not know. Keep the section IDs for evaluation.\n\n" + (context or "No relevant knowledge or catalog records were retrieved.")
+            system += "\n\nUse only the retrieved documents/catalog rows below as factual evidence. A retrieved passage must explicitly support the requested fact; keyword overlap or adjacent subject matter is not enough. For example, delivery lead-time tables do not establish delivery-slot availability or operating hours. Do not infer an unstated option or policy. Apply the precedence stated above. Do not treat a superseded section as generally current; use it only if a current successor explicitly preserves it for this case. If evidence is missing, say you do not know. Keep the section IDs for evaluation.\n\n" + (context or "No relevant knowledge or catalog records were retrieved.")
             if date_context:
                 system += "\n\n" + date_context
         return system, sources

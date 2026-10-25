@@ -75,10 +75,19 @@ def report_progress(output_file, count: int) -> None:
         print(f"Evaluated {count} generated cases...", flush=True)
 
 
+def positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return parsed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run agent-generated practice evaluation")
     parser.add_argument("--dataset", type=Path)
     parser.add_argument("--steps", nargs="+", type=int, choices=(1, 2, 3), default=[1, 2])
+    parser.add_argument("--limit", type=positive_int,
+                        help="Cap questions per step and use only the first N complete Step 3 conversations")
     parser.add_argument("--output", type=Path, default=Path("reports/evaluation.jsonl"))
     parser.add_argument("--resume", action="store_true",
                         help="Continue an existing JSONL run, skipping completed cases")
@@ -88,6 +97,22 @@ def main() -> int:
     conversations_path = dataset / "practice" / "conversations.csv"
     if not questions_path.exists():
         print(f"Practice questions not found: {questions_path}", file=sys.stderr); return 2
+    question_rows = read_csv(questions_path)
+    conversation_rows = read_csv(conversations_path) if conversations_path.exists() else []
+    if args.limit is not None:
+        question_rows = question_rows[:args.limit]
+        conversation_ids = []
+        for row in conversation_rows:
+            conversation_id = pick(row, "conversation_id", "case_id", "id")
+            if conversation_id and conversation_id not in conversation_ids:
+                conversation_ids.append(conversation_id)
+            if len(conversation_ids) >= args.limit:
+                break
+        selected_conversations = set(conversation_ids)
+        conversation_rows = [row for row in conversation_rows
+                             if pick(row, "conversation_id", "case_id", "id") in selected_conversations]
+        print(f"Quota limit: {len(question_rows)} questions per step; Step 3 is capped to "
+              f"{len(conversation_ids)} complete conversations if selected.", flush=True)
     model = GeminiChatModel(cfg.gemini_api_key, cfg.gemini_model, cfg.gemini_timeout,
                             cfg.gemini_min_request_interval, cfg.gemini_fallback_api_key)
     kb = configured_knowledge(dataset, cfg)
@@ -119,7 +144,6 @@ def main() -> int:
                 if bucket:
                     scored.setdefault(bucket, []).append(item)
         if 3 in args.steps and conversations_path.exists():
-            conversation_rows = read_csv(conversations_path)
             expected: dict[str, set[tuple[str, int, str, str]]] = {}
             for row in conversation_rows:
                 cid = pick(row, "conversation_id", "case_id", "id")
@@ -156,7 +180,7 @@ def main() -> int:
     conversation_agents: dict[str, SupportAgent] = {}
     with out.open("a" if args.resume else "w", encoding="utf-8") as f:
         for step in args.steps:
-            for row in read_csv(questions_path):
+            for row in question_rows:
                 question = pick(row, "asr_text", "question", "customer_text", "prompt")
                 if not question:
                     continue
@@ -201,7 +225,7 @@ def main() -> int:
                     completed[asr_key] = asr_item
                     scored.setdefault("step_3_asr_text", []).append(asr_item)
         if conversations_path.exists() and 3 in args.steps:
-            conversations = read_csv(conversations_path)
+            conversations = conversation_rows
             conversations.sort(key=lambda row: (pick(row, "conversation_id", "case_id", "id"),
                                                 int(pick(row, "turn", "turn_number", "sequence") or 0)))
             for conversation in conversations:
@@ -238,6 +262,8 @@ def main() -> int:
     print(f"Wrote {count} agent-generated results to {out}")
     print(f"Evaluation summary: {summary_path}")
     for step in (1, 2):
+        if step not in args.steps:
+            continue
         metrics = summary.get(f"step_{step}_questions", {})
         evidence = metrics.get("evidence_complete", {})
         grounded = metrics.get("must_include_pass", {})

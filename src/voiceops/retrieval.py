@@ -57,6 +57,18 @@ QUERY_SYNONYMS = {
     "kitne din": "return window category calendar days RET-2",
     "parso deliver": "delivery date return window calendar days RET-2",
 }
+SPOKEN_DIGIT_FORMS = {
+    "0": ("zero", "oh", "o"),
+    "1": ("one", "won"),
+    "2": ("two", "to", "too"),
+    "3": ("three",),
+    "4": ("four", "for"),
+    "5": ("five",),
+    "6": ("six",),
+    "7": ("seven",),
+    "8": ("eight", "ate"),
+    "9": ("nine",),
+}
 
 
 @dataclass
@@ -108,6 +120,7 @@ class KnowledgeBase:
         self._vectors: list[list[float]] | None = None
         self.embedding_error = ""
         self.chunks: list[Chunk] = []
+        self.product_skus: list[str] = []
         kb = dataset / "kb"
         for path in sorted(kb.rglob("*.md")):
             if "support_logs" in path.stem.lower() or "support_log" in path.stem.lower():
@@ -141,12 +154,25 @@ class KnowledgeBase:
                     record_id = row.get(id_column, "").strip()
                     if not record_id:
                         continue
+                    if filename == "products.csv":
+                        self.product_skus.append(record_id)
                     body = "; ".join(f"{key}: {value}" for key, value in row.items() if value)
                     source = f"{filename}:{record_id}"
                     self.chunks.append(Chunk(body, source, source, "current", "2026-10-20", "catalog", "en"))
 
     def search(self, query: str, k: int = 8) -> list[Chunk]:
         expanded = query.casefold()
+        for sku in self.product_skus:
+            prefix, separator, digits = sku.partition("-")
+            if not separator or not digits.isdigit():
+                continue
+            prefix_pattern = r"[\s.-]*".join(re.escape(letter) for letter in prefix.casefold())
+            digit_patterns = ["(?:" + "|".join(SPOKEN_DIGIT_FORMS[digit]) + ")"
+                              for digit in digits]
+            spoken_sku = (r"\bsku\b[\s:,-]*" + prefix_pattern + r"[\s-]*" +
+                          r"[\s-]+".join(digit_patterns) + r"\b")
+            if re.search(spoken_sku, query, re.I):
+                expanded += f" {sku}"
         for phrase, extra_terms in QUERY_SYNONYMS.items():
             if phrase in expanded:
                 expanded += " " + extra_terms
@@ -221,7 +247,7 @@ class KnowledgeBase:
             return []
         vector_results = self._vector_search(expanded, k, targeted_sections)
         if vector_results is not None:
-            return self._select_results(vector_results, query, k, targeted_sections)
+            return self._select_results(vector_results, expanded, k, targeted_sections)
         scored = []
         corpus_size = max(len(self.chunks), 1)
         df = {term: sum(1 for chunk in self.chunks if term in TOKEN_RE.findall(chunk.text.casefold())) for term in set(terms)}
@@ -249,11 +275,11 @@ class KnowledgeBase:
                 # Preserve explicit intent-section matches even when sparse or
                 # non-English wording has no lexical overlap with that chunk.
                 score = max(score, 1.0) * 10
-            if chunk.doc_type == "catalog" and chunk.source.split(":")[-1].casefold() in query:
+            if chunk.doc_type == "catalog" and chunk.source.split(":")[-1].casefold() in expanded:
                 score *= 1000
             scored.append((score, chunk))
         ranked = [chunk for score, chunk in sorted(scored, key=lambda pair: pair[0], reverse=True) if score > 0]
-        return self._select_results(ranked, query, k, targeted_sections)
+        return self._select_results(ranked, expanded, k, targeted_sections)
 
     @staticmethod
     def _select_results(ranked: list[Chunk], query: str, k: int,

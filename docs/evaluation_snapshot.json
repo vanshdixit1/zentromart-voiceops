@@ -5,26 +5,117 @@
   "scoring_note": "String-based screening checks; review paraphrases, date and number equivalence, and language quality manually.",
   "step_1_questions": {
     "cases": 52,
-    "required_facts": {"passed": 8, "scored": 49},
-    "evidence_complete": {"passed": 0, "scored": 47},
-    "tool_calls_match": {"passed": 52, "scored": 52},
-    "forbidden_claims_avoided": {"passed": 52, "scored": 52},
-    "hard_negatives_avoided": {"passed": 52, "scored": 52}
+    "required_facts": {
+      "passed": 8,
+      "scored": 49
+    },
+    "evidence_complete": {
+      "passed": 0,
+      "scored": 47
+    },
+    "tool_calls_match": {
+      "passed": 52,
+      "scored": 52
+    },
+    "forbidden_claims_avoided": {
+      "passed": 52,
+      "scored": 52
+    },
+    "hard_negatives_avoided": {
+      "passed": 52,
+      "scored": 52
+    }
   },
   "step_2_questions": {
     "cases": 52,
-    "required_facts": {"passed": 42, "scored": 49},
-    "evidence_complete": {"passed": 47, "scored": 47},
-    "tool_calls_match": {"passed": 52, "scored": 52},
-    "forbidden_claims_avoided": {"passed": 52, "scored": 52},
-    "hard_negatives_avoided": {"passed": 52, "scored": 52}
+    "required_facts": {
+      "passed": 42,
+      "scored": 49
+    },
+    "evidence_complete": {
+      "passed": 47,
+      "scored": 47
+    },
+    "tool_calls_match": {
+      "passed": 52,
+      "scored": 52
+    },
+    "forbidden_claims_avoided": {
+      "passed": 52,
+      "scored": 52
+    },
+    "hard_negatives_avoided": {
+      "passed": 52,
+      "scored": 52
+    }
   },
   "step_3_conversations_post_fix_saved_snapshot": {
     "cases": 96,
-    "required_facts": {"passed": 59, "scored": 77},
-    "evidence_complete": {"passed": 96, "scored": 96},
-    "tool_calls_match": {"passed": 96, "scored": 96},
-    "forbidden_claims_avoided": {"passed": 96, "scored": 96},
-    "hard_negatives_avoided": {"passed": 96, "scored": 96}
+    "required_facts": {
+      "passed": 59,
+      "scored": 77
+    },
+    "evidence_complete": {
+      "passed": 96,
+      "scored": 96
+    },
+    "tool_calls_match": {
+      "passed": 96,
+      "scored": 96
+    },
+    "forbidden_claims_avoided": {
+      "passed": 96,
+      "scored": 96
+    },
+    "hard_negatives_avoided": {
+      "passed": 96,
+      "scored": 96
+    }
+  },
+  "live_asr_pilot": {
+    "model": "gemini-3.5-flash-lite",
+    "input_field": "asr_text",
+    "question_ids": [
+      "PQ0002",
+      "PQ0003",
+      "PQ0004"
+    ],
+    "request_spacing_seconds": 4.1,
+    "initial_baseline_before_fixes": {
+      "step_1": {
+        "required_facts_passed": 1,
+        "required_facts_scored": 3,
+        "gold_evidence_passed": 0,
+        "gold_evidence_scored": 2
+      },
+      "step_2": {
+        "required_facts_passed": 1,
+        "required_facts_scored": 3,
+        "gold_evidence_passed": 1,
+        "gold_evidence_scored": 2
+      }
+    },
+    "step_2_after_targeted_fixes": {
+      "required_facts_passed": 3,
+      "required_facts_scored": 3,
+      "gold_evidence_passed": 2,
+      "gold_evidence_scored": 2,
+      "hard_negatives_avoided": 3,
+      "hard_negatives_scored": 3,
+      "tool_calls_matched": 3,
+      "tool_calls_scored": 3
+    },
+    "scope_note": "Quota-limited live sample of the first three asr_text rows, not the full 52-question evaluation. Scores are literal string/source checks."
+  },
+  "live_voice_smoke": {
+    "input_file": "sample_outputs/live_voice_smoke_verified/input/01.wav",
+    "audio_files": 1,
+    "pipeline": "Gnani STT -> Gemini SupportAgent -> Gnani TTS",
+    "transcript_present": true,
+    "generated_reply_present": true,
+    "retrieved_source_count": 11,
+    "reply_audio_seconds": 13.44,
+    "error": false,
+    "note": "Synthetic pre-recorded input; duration measured from the streaming WAV data chunk; browser microphone capture was not repeated."
   }
 }

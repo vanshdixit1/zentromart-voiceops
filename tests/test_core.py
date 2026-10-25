@@ -267,6 +267,14 @@ class CoreTests(unittest.TestCase):
         self.assertIn("RET-3", returns)
         catalog = {chunk.section_id for chunk in kb.search("ELE-0012 warranty", 5)}
         self.assertIn("products.csv:ELE-0012", catalog)
+        spoken_catalog = {chunk.section_id for chunk in kb.search(
+            "so sku ele-zero zero one to pe zentromart assured hai kya claim kaise karein", 8)}
+        self.assertIn("products.csv:ELE-0012", spoken_catalog)
+        self.assertNotIn("products.csv:INR-0067", spoken_catalog)
+        self.assertIn("WAR-2", spoken_catalog)
+        system, _ = SupportAgent(MockModel(""), 2, knowledge=kb)._system(
+            "Can I schedule a delivery at midnight?")
+        self.assertIn("delivery lead-time tables do not establish delivery-slot availability", system)
         natural = {chunk.section_id for chunk in kb.search("nobody came to collect my return", 8)}
         self.assertIn("RVP-2", natural)
         offline_kb = KnowledgeBase(dataset, EmbeddingClient("", "https://example.invalid/v1", "text-embedding-3-small"))

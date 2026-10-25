@@ -1,0 +1,27 @@
+{
+  "tool": "Python standard-library trace",
+  "metric": "executed executable source lines",
+  "scope": [
+    "batch_run.py",
+    "evaluate.py",
+    "web_app.py",
+    "src/voiceops/agent.py",
+    "src/voiceops/config.py",
+    "src/voiceops/data.py",
+    "src/voiceops/llm.py",
+    "src/voiceops/retrieval.py",
+    "src/voiceops/tools.py",
+    "src/voiceops/voice.py"
+  ],
+  "covered_lines": 1422,
+  "executable_lines": 1754,
+  "line_coverage_percent": 81.1,
+  "branch_coverage": "not measured",
+  "tests": {
+    "run": 38,
+    "passed": 37,
+    "skipped": 1,
+    "skip_reason": "local socket connections blocked by this environment"
+  },
+  "note": "coverage.py was unavailable offline; the built-in trace module was used without adding a runtime dependency."
+}
