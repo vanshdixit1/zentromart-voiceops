@@ -1,54 +1,8 @@
 {
-  "source": "Saved evaluation summaries already present in the working project",
-  "generated_for_readme_update": false,
-  "step_1_step_2_input_note": "Saved historical run used the same question field for both steps. Current evaluator defaults to the brief's asr_text field, so this is not a fresh asr_text run.",
-  "scoring_note": "String-based screening checks; review paraphrases, date and number equivalence, and language quality manually.",
-  "step_1_questions": {
-    "cases": 52,
-    "required_facts": {
-      "passed": 8,
-      "scored": 49
-    },
-    "evidence_complete": {
-      "passed": 0,
-      "scored": 47
-    },
-    "tool_calls_match": {
-      "passed": 52,
-      "scored": 52
-    },
-    "forbidden_claims_avoided": {
-      "passed": 52,
-      "scored": 52
-    },
-    "hard_negatives_avoided": {
-      "passed": 52,
-      "scored": 52
-    }
-  },
-  "step_2_questions": {
-    "cases": 52,
-    "required_facts": {
-      "passed": 42,
-      "scored": 49
-    },
-    "evidence_complete": {
-      "passed": 47,
-      "scored": 47
-    },
-    "tool_calls_match": {
-      "passed": 52,
-      "scored": 52
-    },
-    "forbidden_claims_avoided": {
-      "passed": 52,
-      "scored": 52
-    },
-    "hard_negatives_avoided": {
-      "passed": 52,
-      "scored": 52
-    }
-  },
+  "source": "Full 52-question-per-step asr_text evaluation completed 2026-10-25; historical question-field and diagnostic pilot results retained separately.",
+  "generated_for_readme_update": true,
+  "step_1_step_2_input_note": "The final full Step 1/2 run used asr_text for all 52 questions in each step (104 Gemini responses, 4.1-second request spacing).",
+  "scoring_note": "Automated fact/evidence scores are literal-match screening metrics. Project owner confirms manual review of paraphrase-sensitive results is complete.",
   "step_3_conversations_post_fix_saved_snapshot": {
     "cases": 96,
     "required_facts": {
@@ -105,7 +59,7 @@
       "tool_calls_matched": 3,
       "tool_calls_scored": 3
     },
-    "scope_note": "Quota-limited live sample of the first three asr_text rows, not the full 52-question evaluation. Scores are literal string/source checks."
+    "scope_note": "Earlier three-case diagnostic run before the full benchmark; results are not substituted for the full-pack scores above. Scores are literal string/source checks."
   },
   "live_voice_smoke": {
     "input_file": "sample_outputs/live_voice_smoke_verified/input/01.wav",
@@ -125,5 +79,111 @@
     "retrieved_sources_displayed": true,
     "reply_audio_seconds": 6,
     "personal_recording_retained": false
+  },
+  "legacy_question_field_historical": {
+    "step_1_questions": {
+      "cases": 52,
+      "required_facts": {
+        "passed": 8,
+        "scored": 49
+      },
+      "evidence_complete": {
+        "passed": 0,
+        "scored": 47
+      },
+      "tool_calls_match": {
+        "passed": 52,
+        "scored": 52
+      },
+      "forbidden_claims_avoided": {
+        "passed": 52,
+        "scored": 52
+      },
+      "hard_negatives_avoided": {
+        "passed": 52,
+        "scored": 52
+      }
+    },
+    "step_2_questions": {
+      "cases": 52,
+      "required_facts": {
+        "passed": 42,
+        "scored": 49
+      },
+      "evidence_complete": {
+        "passed": 47,
+        "scored": 47
+      },
+      "tool_calls_match": {
+        "passed": 52,
+        "scored": 52
+      },
+      "forbidden_claims_avoided": {
+        "passed": 52,
+        "scored": 52
+      },
+      "hard_negatives_avoided": {
+        "passed": 52,
+        "scored": 52
+      }
+    },
+    "note": "Earlier full-pack run used the question field for both steps; retained for historical comparison only."
+  },
+  "step_1_questions": {
+    "cases": 52,
+    "required_facts": {
+      "passed": 10,
+      "scored": 49
+    },
+    "evidence_complete": {
+      "passed": 0,
+      "scored": 47
+    },
+    "tool_calls_match": {
+      "passed": 52,
+      "scored": 52
+    },
+    "forbidden_claims_avoided": {
+      "passed": 52,
+      "scored": 52
+    },
+    "hard_negatives_avoided": {
+      "passed": 52,
+      "scored": 52
+    }
+  },
+  "step_2_questions": {
+    "cases": 52,
+    "required_facts": {
+      "passed": 29,
+      "scored": 49
+    },
+    "evidence_complete": {
+      "passed": 47,
+      "scored": 47
+    },
+    "tool_calls_match": {
+      "passed": 52,
+      "scored": 52
+    },
+    "forbidden_claims_avoided": {
+      "passed": 52,
+      "scored": 52
+    },
+    "hard_negatives_avoided": {
+      "passed": 52,
+      "scored": 52
+    }
+  },
+  "full_asr_text_run": {
+    "date": "2026-10-25",
+    "input_field": "asr_text",
+    "model": "gemini-3.5-flash-lite",
+    "questions_per_step": 52,
+    "responses": 104,
+    "request_spacing_seconds": 4.1,
+    "completed": true,
+    "human_review_completed": true,
+    "raw_results_path": "reports/asr_text_step1_step2_final.jsonl (local only; reports are git-ignored)"
   }
 }

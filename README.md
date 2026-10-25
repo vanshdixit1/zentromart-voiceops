@@ -55,21 +55,21 @@ VoiceOps is a customer-support capstone for fictional Indian retailer ZentroMart
 
 ## Evaluation snapshot
 
-The full Step 1/2 figures below are **saved historical results** using the same `question` field for both steps; they are not a fresh full-pack `asr_text` run. A quota-limited live `asr_text` pilot was also run on the first three practice IDs. Conversation checks use all 96 supplied turns in the saved post-fix run. Scores are string/source screening signals and can miss valid paraphrases or equivalent date/number phrasing.
+The full Step 1/2 figures below are a fresh run on the brief's `asr_text` field: all 52 questions per step, 104 Gemini responses, with 4.1-second request spacing. The earlier `question`-field results remain in [docs/evaluation_snapshot.json](docs/evaluation_snapshot.json) as historical context. The project owner has completed manual review of paraphrase-sensitive results; table scores remain the evaluator's literal-match checks. Conversation checks use all 96 supplied turns in the saved post-fix run.
 
 | Saved run | Cases | Required facts | Evidence complete | Tool calls match | Other checks |
 |---|---:|---:|---:|---:|---|
-| Step 1 · prompt only | 52 questions | 8 / 49 (16.3%) | 0 / 47 (0%) | 52 / 52 (100%) | 52 / 52 avoided forbidden claims |
-| Step 2 · grounded RAG | 52 questions | 42 / 49 (85.7%) | 47 / 47 (100%) | 52 / 52 (100%) | 52 / 52 avoided hard negatives |
+| Step 1 · prompt only (`asr_text`) | 52 questions | 10 / 49 (20.4%) | 0 / 47 (no RAG) | 52 / 52 (100%) | 52 / 52 avoided forbidden claims and hard negatives |
+| Step 2 · grounded RAG (`asr_text`) | 52 questions | 29 / 49 (59.2%) | 47 / 47 (100%) | 52 / 52 (100%) | 52 / 52 avoided forbidden claims and hard negatives |
 | Step 3 · conversations, post-fix saved snapshot | 96 turns | 59 / 77 (76.6%) | 96 / 96 (100%) | 96 / 96 (100%) | 96 / 96 forbidden-claim and hard-negative checks |
 
-### Live, quota-limited `asr_text` pilot
+### Earlier three-case `asr_text` diagnostic pilot
 
-The first three practice IDs were `PQ0002`, `PQ0003`, and `PQ0004` (spoken-SKU warranty, wallet refund timing, and an unsupported delivery-slot question). The initial Step 1 baseline scored 1/3 required facts and 0/2 gold-evidence checks; initial Step 2 scored 1/3 and 1/2. After fixing spoken SKU retrieval and tightening the grounded-answer instruction, the Step 2 recheck scored **3/3 required facts, 2/2 scored gold-evidence checks, 3/3 hard-negative checks, and 3/3 tool-call checks**. The unsupported case now says it cannot confirm midnight availability instead of inventing delivery hours. This is a three-case pilot, not a full benchmark. Requests used the configured 4.1-second spacing. Details are in [docs/evaluation_snapshot.json](docs/evaluation_snapshot.json).
+Before the full run, the first three practice IDs were used to diagnose spoken-SKU warranty, wallet refund timing, and an unsupported delivery-slot question. The Step 2 recheck after fixes scored **3/3 required facts, 2/2 gold-evidence checks, 3/3 hard-negative checks, and 3/3 tool-call checks**. That earlier pilot is diagnostic only; it is not the final full-set score. Details are in [docs/evaluation_snapshot.json](docs/evaluation_snapshot.json).
 
 Run a similarly small sample with `python evaluate.py --dataset dataset --steps 1 2 --limit 3 --output reports/asr-pilot.jsonl`. The limit caps questions per step; if Step 3 is selected, it also limits to the first three complete conversations, preserving every turn in each.
 
-![Saved required-fact rates for Steps 1–3 and evidence coverage for Steps 2–3](docs/media/evaluation-results.svg)
+![Full asr_text required-fact rates for Steps 1–2 and saved conversation results, plus evidence coverage](docs/media/evaluation-results.svg)
 
 The aggregate numbers are preserved in [docs/evaluation_snapshot.json](docs/evaluation_snapshot.json); generated per-case reports under `reports/` stay excluded from Git. The evaluation is reproducible with the supplied dataset and Gemini credentials. Review `evaluate.py` and `docs/capstone_report.md` for scoring limits and project context.
 

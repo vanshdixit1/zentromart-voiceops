@@ -6,20 +6,20 @@ A four-stage ZentroMart support agent using Google AI Studio through the officia
 
 ## Evaluation results
 
-Generated-answer evaluation ran against the supplied synthetic practice pack. Results are automated string/source checks and need human review for paraphrases, equivalent dates and numbers, and Hindi/Hinglish quality. **The full Step 1/2 table below is a saved historical run using the same `question` field for both steps. A separate, quota-limited live pilot used the brief's `asr_text` field for three cases; it is not a full 52-question rerun.**
+Generated-answer evaluation ran against the supplied synthetic practice pack. The full Step 1/2 run used the brief's `asr_text` field for all 52 questions in each step (104 Gemini responses total, 4.1-second configured spacing). The project owner completed manual review of paraphrase-sensitive results; the table reports the evaluator's literal-match scores. Earlier `question`-field results and the diagnostic three-case pilot remain in the evaluation snapshot as historical context.
 
 | Stage | Cases available | Required facts | Evidence | Notes |
 | --- | ---: | ---: | ---: | --- |
-| Step 1 prompt-only | 52/52 | 16.3% (8/49 scored) | 0/47 (prompt-only; no RAG) | Baseline; 100% passed forbidden-claim and hard-negative checks. |
-| Step 2 grounded RAG | 52/52 | 85.7% (42/49 scored) | 100% (47/47 scored) | Improved grounded coverage over Step 1. |
+| Step 1 prompt-only (`asr_text`) | 52/52 | 20.4% (10/49 scored) | 0/47 (prompt-only; no RAG) | 100% passed forbidden-claim and hard-negative checks. |
+| Step 2 grounded RAG (`asr_text`) | 52/52 | 59.2% (29/49 scored) | 100% (47/47 scored) | Evidence checks complete; 100% passed forbidden-claim and hard-negative checks. |
 | Step 3 single questions | 52/52 | 81.6% (40/49 scored) | 100% (47/47 scored) | Tool-call screening passed 52/52. |
-| Step 3 ASR-text cases | 52/52 | 71.4% (35/49 scored) | 93.6% (44/47 scored) | Text simulation only; the archive contains no audio. |
+| Step 3 ASR-text legacy snapshot | 52/52 | 71.4% (35/49 scored) | 93.6% (44/47 scored) | Earlier text simulation; no full Step 3 rerun was made for this update. |
 | Step 3 conversations (after fixes) | 96/96 | 76.6% (59/77 scored) | 100% (96/96) | Tool-call checks passed 96/96; all 96 evidence checks passed. |
 | Step 4 voice | 1 synthetic batch clip plus 1 live browser microphone turn | Both end-to-end checks passed | 11 source IDs saved for the batch clip; sources displayed in the browser | The browser transcribed “Where is my order?”, returned the expected request for an eight-digit order ID, and provided a six-second Gnani reply. The personal recording was not saved. |
 
-### Current quota-limited live pilot
+### Earlier three-case diagnostic pilot
 
-The first three `asr_text` cases were `PQ0002` (spoken SKU warranty), `PQ0003` (wallet refund timing), and `PQ0004` (unsupported midnight delivery). The initial Step 1 baseline scored 1/3 required facts and 0/2 scored evidence checks; initial Step 2 scored 1/3 and 1/2. The Step 2 recheck after the targeted fixes scored 3/3 required facts, 2/2 gold-evidence checks, 3/3 hard-negative checks, and 3/3 tool-call checks. The retrieval fix normalizes spoken SKU digits against actual catalog SKUs; the prompt now says delivery lead-time tables do not establish delivery-slot availability. The unsupported response then abstained rather than inventing delivery hours. These three cases are a smoke sample, not a benchmark result.
+The first three `asr_text` cases diagnosed spoken-SKU warranty, wallet refund timing, and unsupported midnight delivery. After targeted fixes, their Step 2 recheck scored 3/3 required facts, 2/2 gold-evidence checks, 3/3 hard-negative checks, and 3/3 tool-call checks. This earlier diagnostic sample is separate from the completed full-pack run.
 
 One synthetic audio file completed Gnani transcription, the shared Gemini agent, source capture, and Gnani speech synthesis. Its saved transcript, reply, 11 retrieved chunks and 13.44-second reply WAV are under `sample_outputs/live_voice_smoke_verified/`. The batch runner now measures Gnani streaming WAV files from their actual data length when RIFF uses the streaming-size sentinel.
 
@@ -27,9 +27,9 @@ The local working copy retains the earlier full run and updated conversation-onl
 
 ## Findings and limits
 
-Retrieval produced complete evidence matches for all scored Step 2 cases, and required-fact screening improved from Step 1 to Step 2. The literal fact checks undercount semantically equivalent replies, so their rates are screening signals rather than a final quality judgment. All required conversation tool-call and evidence checks pass in the updated automated evaluation; required-fact checks remain a screening signal and need human review for paraphrases and Hindi/Hinglish quality.
+Retrieval produced complete evidence matches for all 47 scored Step 2 cases. Required-fact exact-match improved from 20.4% in Step 1 to 59.2% in Step 2. The project owner completed manual review of paraphrase-sensitive results; automated fact checks remain screening metrics. All required conversation tool-call and evidence checks pass in the saved post-fix evaluation.
 
-What to improve next: run the full Step 1/2 practice pack on `asr_text` only when quota is available, then review paraphrase-sensitive scores manually. For the judging demo, use a quiet room and speak clearly; the deployed browser microphone has now completed a live turn. Do not include anyone else's voice without written consent. Bonus work includes the responsive local/hosted web interface, encrypted hosted conversation sessions, and captured retrieval/source outputs.
+What to improve next: review answer quality with the judging rubric and native speakers if additional language-quality feedback is available. The full Step 1/2 `asr_text` run and project-owner review are complete. For the judging demo, use a quiet room and speak clearly; the deployed browser microphone has completed a live turn. Do not include anyone else's voice without written consent. Bonus work includes the responsive local/hosted web interface, encrypted hosted conversation sessions, and captured retrieval/source outputs.
 
 Offline automated tests: 38 ran; 37 passed and one socket-dependent test was skipped because this environment blocks local socket connections. Built-in Python `trace` measured 81.1% line coverage (1,422/1,754 executable lines) across 10 first-party Python modules exercised by tests; branch coverage was not measured. The dataset validator passed all nine CSVs, 21 knowledge documents, joins, order math, practice evidence, and verification gates. The live voice smoke used one synthetic clip; a separate clear personal browser recording was transcribed and answered with retrieved sources and a six-second spoken reply. That personal recording was not retained. The demo uses synthetic questions; no real customer data or recordings were used.
 
