@@ -81,6 +81,7 @@ The aggregate numbers are preserved in [docs/evaluation_snapshot.json](docs/eval
 | Dataset validator | Passed locally with `python validate_dataset.py` |
 | Python line coverage | 81.1% (1,422 / 1,754 executable lines across 10 exercised first-party modules; built-in `trace`; branch coverage not measured) |
 | Live Gemini / Gnani smoke | Three `asr_text` cases compared Step 1 and Step 2; one synthetic audio file completed Gnani STT → Gemini → Gnani TTS |
+| Live website microphone check | Gnani transcribed a clear personal question; Gemini returned the expected order-ID prompt, retrieved sources were shown, and a six-second Gnani reply was available. The personal recording was not saved. |
 
 ## Quick start
 

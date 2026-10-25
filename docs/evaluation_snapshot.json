@@ -116,6 +116,14 @@
     "retrieved_source_count": 11,
     "reply_audio_seconds": 13.44,
     "error": false,
-    "note": "Synthetic pre-recorded input; duration measured from the streaming WAV data chunk; browser microphone capture was not repeated."
+    "note": "Synthetic pre-recorded input; duration measured from the streaming WAV data chunk. A separate live browser microphone check is recorded below."
+  },
+  "browser_microphone_check": {
+    "date": "2026-10-25",
+    "transcript": "Where is my order?",
+    "assistant_behavior": "Asked for the eight-digit order ID",
+    "retrieved_sources_displayed": true,
+    "reply_audio_seconds": 6,
+    "personal_recording_retained": false
   }
 }

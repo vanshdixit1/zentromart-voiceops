@@ -15,7 +15,7 @@ Generated-answer evaluation ran against the supplied synthetic practice pack. Re
 | Step 3 single questions | 52/52 | 81.6% (40/49 scored) | 100% (47/47 scored) | Tool-call screening passed 52/52. |
 | Step 3 ASR-text cases | 52/52 | 71.4% (35/49 scored) | 93.6% (44/47 scored) | Text simulation only; the archive contains no audio. |
 | Step 3 conversations (after fixes) | 96/96 | 76.6% (59/77 scored) | 100% (96/96) | Tool-call checks passed 96/96; all 96 evidence checks passed. |
-| Step 4 voice | 1 synthetic audio file in this audit | Live end-to-end smoke passed | 11 source IDs saved | Gnani STT → Gemini agent → Gnani TTS completed; browser microphone did not capture intelligible speech in an earlier check. |
+| Step 4 voice | 1 synthetic batch clip plus 1 live browser microphone turn | Both end-to-end checks passed | 11 source IDs saved for the batch clip; sources displayed in the browser | The browser transcribed “Where is my order?”, returned the expected request for an eight-digit order ID, and provided a six-second Gnani reply. The personal recording was not saved. |
 
 ### Current quota-limited live pilot
 
@@ -29,9 +29,9 @@ The local working copy retains the earlier full run and updated conversation-onl
 
 Retrieval produced complete evidence matches for all scored Step 2 cases, and required-fact screening improved from Step 1 to Step 2. The literal fact checks undercount semantically equivalent replies, so their rates are screening signals rather than a final quality judgment. All required conversation tool-call and evidence checks pass in the updated automated evaluation; required-fact checks remain a screening signal and need human review for paraphrases and Hindi/Hinglish quality.
 
-What to improve next: run the full Step 1/2 practice pack on `asr_text` only when quota is available, then review paraphrase-sensitive scores manually. Before a live judging demo, verify microphone positioning and speech level with a clear, short personal recording; do not include anyone else's voice without written consent. Bonus work includes the responsive local/hosted web interface, encrypted hosted conversation sessions, and captured retrieval/source outputs.
+What to improve next: run the full Step 1/2 practice pack on `asr_text` only when quota is available, then review paraphrase-sensitive scores manually. For the judging demo, use a quiet room and speak clearly; the deployed browser microphone has now completed a live turn. Do not include anyone else's voice without written consent. Bonus work includes the responsive local/hosted web interface, encrypted hosted conversation sessions, and captured retrieval/source outputs.
 
-Offline automated tests: 38 ran; 37 passed and one socket-dependent test was skipped because this environment blocks local socket connections. Built-in Python `trace` measured 81.1% line coverage (1,422/1,754 executable lines) across 10 first-party Python modules exercised by tests; branch coverage was not measured. The dataset validator passed all nine CSVs, 21 knowledge documents, joins, order math, practice evidence, and verification gates. The live voice smoke used one synthetic clip; the browser microphone was not retested and had returned no intelligible speech in an earlier check. The demo uses synthetic questions; no real customer data or recordings were used.
+Offline automated tests: 38 ran; 37 passed and one socket-dependent test was skipped because this environment blocks local socket connections. Built-in Python `trace` measured 81.1% line coverage (1,422/1,754 executable lines) across 10 first-party Python modules exercised by tests; branch coverage was not measured. The dataset validator passed all nine CSVs, 21 knowledge documents, joins, order math, practice evidence, and verification gates. The live voice smoke used one synthetic clip; a separate clear personal browser recording was transcribed and answered with retrieved sources and a six-second spoken reply. That personal recording was not retained. The demo uses synthetic questions; no real customer data or recordings were used.
 
 ## Reproducibility
 
