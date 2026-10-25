@@ -1,0 +1,29 @@
+{
+  "source": "Saved evaluation summaries already present in the working project",
+  "generated_for_readme_update": false,
+  "scoring_note": "String-based screening checks; review paraphrases, date and number equivalence, and language quality manually.",
+  "step_1_questions": {
+    "cases": 52,
+    "required_facts": {"passed": 8, "scored": 49},
+    "evidence_complete": {"passed": 0, "scored": 47},
+    "tool_calls_match": {"passed": 52, "scored": 52},
+    "forbidden_claims_avoided": {"passed": 52, "scored": 52},
+    "hard_negatives_avoided": {"passed": 52, "scored": 52}
+  },
+  "step_2_questions": {
+    "cases": 52,
+    "required_facts": {"passed": 42, "scored": 49},
+    "evidence_complete": {"passed": 47, "scored": 47},
+    "tool_calls_match": {"passed": 52, "scored": 52},
+    "forbidden_claims_avoided": {"passed": 52, "scored": 52},
+    "hard_negatives_avoided": {"passed": 52, "scored": 52}
+  },
+  "step_3_conversations_post_fix_saved_snapshot": {
+    "cases": 96,
+    "required_facts": {"passed": 59, "scored": 77},
+    "evidence_complete": {"passed": 96, "scored": 96},
+    "tool_calls_match": {"passed": 96, "scored": 96},
+    "forbidden_claims_avoided": {"passed": 96, "scored": 96},
+    "hard_negatives_avoided": {"passed": 96, "scored": 96}
+  }
+}
